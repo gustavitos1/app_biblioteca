@@ -7,11 +7,13 @@ def livros_get():
     if livro_get.status_code == 200:
         dados_get_postagem = livro_get.json()
         for livros in dados_get_postagem:
-            print(f"titulo: {livros['Titulo']}")
-            print(f"autor: {livros['Autor']}")
-            print(f"resumo: {livros['Resumo']}")
-            print(f"ISBN: {livros['ISBN']}")
-            print("-" * 40)
+             # print(f"titulo: {livros['Titulo']}")
+            # print(f"autor: {livros['Autor']}")
+            # print(f"resumo: {livros['Resumo']}")
+            # print(f"ISBN: {livros['ISBN']}")
+            # print("-" * 40)
+            print(livros)
+
     else:
         print(f'Erro: {livro_get.status_code}')
 
@@ -59,5 +61,34 @@ def livros_put(id):
         print(f'Erro: {response_post.status_code}')
         # print(response_post.json())
 
+def usuarios_get():
+    url = f"http://10.135.232.34:5000/usuarios"
 
-livros_put(1)
+    usuarios_get = requests.get(url)
+    if usuarios_get.status_code == 200:
+        dados_get_postagem = usuarios_get.json()
+        for usuarios in dados_get_postagem:
+            print(usuarios)
+    else:
+        print(f'Erro: {usuarios_get.status_code}')
+
+def usuarios_post():
+    url = "http://10.135.232.34:5000/cadastrar_usuario"
+
+    nova_post = {
+        "Nome": "maurição",
+        "CPF": "34265663",
+        "Endereco": "rua jessé da silva",
+    }
+
+    response_post = requests.post(url, json=nova_post)
+    if response_post.status_code == 201:
+        dados_post = response_post.json()
+        print(dados_post)
+        print(dados_post["mensagem"])
+    else:
+        print(f'Erro: {response_post.status_code}')
+        print(f'Erro: {response_post.json()}')
+
+
+usuarios_post()
