@@ -10,6 +10,20 @@ def main(page: ft.Page):
     page.window.width = 400
     page.window.height = 700
 
+    progress = ft.ProgressRing(visible=False)
+
+    txt_titulo = ft.Text(size=16)
+    lbl_titulo = ft.Text(value="Titulo:", size=18, weight=FontWeight.BOLD)
+
+    txt_autor = ft.Text(size=16)
+    lbl_autor = ft.Text(value="Autor:", size=18)
+
+    txt_resumo = ft.Text(size=16)
+    lbl_resumo = ft.Text(value="Resumo:", size=18)
+
+    txt_isbn = ft.Text(size=16)
+    lbl_isbn = ft.Text(value="ISBN:", size=18)
+
     # inputs de usuario e admin
     input_nome = ft.TextField(label="Nome")
     input_senha = ft.TextField(label="Senha")
@@ -47,7 +61,7 @@ def main(page: ft.Page):
 
         novo_livro = {
             "Titulo": input_titulo.value,
-            "senha": input_autor.value,
+            "Autor": input_autor.value,
             "Resumo": input_resumo.value,
             "ISBN": input_isbn.value
         }
@@ -60,26 +74,6 @@ def main(page: ft.Page):
     realizar_cadastro_livro = ft.ElevatedButton(text="Cadastrar", on_click=cadastrar_livro)
 
     # funções de listar livro
-    def listar_livros():
-        url = f"http://10.135.232.34:5000/livros"
-        livro_get = requests.get(url)
-
-        if livro_get.status_code == 200:
-            dados_get_postagem = livro_get.json()
-            for livros in dados_get_postagem:
-                print(f"titulo: {livros['Titulo']}")
-                print(f"autor: {livros['Autor']}")
-                print(f"resumo: {livros['Resumo']}")
-                print(f"ISBN: {livros['ISBN']}")
-                print("-" * 40)
-        else:
-            print(f'Erro: {livro_get.status_code}')
-
-    lv_livros = ft.ListView(
-        height=500,
-        spacing=1,
-        divider_thickness=1
-    )
 
 
 
@@ -166,19 +160,34 @@ def main(page: ft.Page):
                         input_autor,
                         input_resumo,
                         input_isbn,
-                        realizar_cadastro_livro
+                        realizar_cadastro_livro,
+                        ft.ElevatedButton(
+                            text="lista",
+                            on_click=lambda _: page.go("/listar_livros"),
+                        ),
                     ]
                 )
             )
-
-        if page.route=="/listar_livros":
+        elif page.route == "/listar_livros":
+            try:
+                resposta = requests.get("http://10.135.232.34:5000/livros")
+                dados = resposta.json()
+                livros = [
+                    ft.Text(
+                        f"Titulo: {L['Titulo']} | Autor: {L['Autor']} | Resumo: {L['Resumo']}, ISBN: {L['ISBN']}"
+                    )
+                    for L in dados
+                ]
+            except Exception as err:
+                livros = [ft.Text(f"Erro ao Listar livro {err}")]
             page.views.append(
-                View(
+                ft.View(
                     "/listar_livros",
-                    [
-                        AppBar(title=Text("Lista de Livros"), bgcolor=Colors.PRIMARY_CONTAINER),
-
-                    ]
+                    controls=[
+                        ft.Text("listar de livros", size=25, weight=FontWeight.BOLD),
+                        ft.Column(livros, scroll=ft.ScrollMode.ALWAYS),
+                        ft.ElevatedButton(text="voltar", on_click=lambda e: page.go("/")),
+                    ],
                 )
             )
 

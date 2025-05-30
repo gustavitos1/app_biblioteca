@@ -7,11 +7,11 @@ def livros_get():
     if livro_get.status_code == 200:
         dados_get_postagem = livro_get.json()
         for livros in dados_get_postagem:
-             # print(f"titulo: {livros['Titulo']}")
-            # print(f"autor: {livros['Autor']}")
-            # print(f"resumo: {livros['Resumo']}")
-            # print(f"ISBN: {livros['ISBN']}")
-            # print("-" * 40)
+            print(f"titulo: {livros['Titulo']}")
+            print(f"autor: {livros['Autor']}")
+            print(f"resumo: {livros['Resumo']}")
+            print(f"ISBN: {livros['ISBN']}")
+            print("-" * 40)
             print(livros)
 
     else:
@@ -91,4 +91,68 @@ def usuarios_post():
         print(f'Erro: {response_post.json()}')
 
 
-usuarios_post()
+def usuarios_put(id):
+    url = f"http://10.135.232.34:5000/editar_usuario/{id}"
+
+    nova_post = {
+        "id": id,
+        "Nome": "renato cariani",
+        "CPF": "34265993",
+        "Endereco": "rua malphite",
+    }
+
+    response_post = requests.put(url, json=nova_post)
+    if response_post.status_code == 200:
+        dados_post = response_post.json()
+        print(f"Nome: {dados_post['mensagem']}\n")
+    else:
+        print(f'Erro: {response_post.status_code}')
+
+def emprestimos_get():
+    url = f"http://10.135.232.34:5000/emprestimos"
+
+    emprestimos_get = requests.get(url)
+    if emprestimos_get.status_code == 200:
+        dados_get_postagem = emprestimos_get.json()
+        for emprestimos in dados_get_postagem:
+            print(emprestimos)
+    else:
+        print(f'Erro: {emprestimos_get.status_code}')
+
+def emprestimos_post():
+    url = "http://10.135.232.34:5000/cadastrar_emprestimo"
+
+    nova_post = {
+        "Data_Emprestimo": "12-05-2025",
+        "Data_Devolucao": "29-05-2025",
+        "id_usuario": "1",
+        "id_livro": "1",
+    }
+
+    response_post = requests.post(url, json=nova_post)
+    if response_post.status_code == 200:
+        dados_post = response_post.json()
+        print(dados_post)
+        print(dados_post["mensagem"])
+    else:
+        print(f'Erro: {response_post.status_code}')
+        print(f'Erro: {response_post.json()}')
+
+def emprestimos_put(id):
+    url = f"http://10.135.232.34:5000/editar_emprestimo/{id}"
+
+    nova_post = {
+        "Data_Emprestimo": "12-05-2025",
+        "Data_Devolucao": "29-05-2025",
+        "id_usuario": "1",
+        "id_livro": "1",
+    }
+
+    response_post = requests.put(url, json=nova_post)
+    if response_post.status_code == 200:
+        dados_post = response_post.json()
+        print(f"Data_Emprestimo: {dados_post['mensagem']}\n")
+    else:
+        print(f'Erro: {response_post.status_code}')
+
+livros_post()
