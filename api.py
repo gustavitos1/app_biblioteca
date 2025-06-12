@@ -7,10 +7,10 @@ def livros_get():
     if livro_get.status_code == 200:
         dados_get_postagem = livro_get.json()
         for livros in dados_get_postagem:
-            print(f"titulo: {livros['Titulo']}")
-            print(f"autor: {livros['Autor']}")
-            print(f"resumo: {livros['Resumo']}")
-            print(f"ISBN: {livros['ISBN']}")
+            print(f"titulo: {livros['titulo']}")
+            print(f"autor: {livros['autor']}")
+            print(f"resumo: {livros['resumo']}")
+            print(f"isbn: {livros['isbn']}")
             print("-" * 40)
             print(livros)
 
@@ -21,10 +21,10 @@ def livros_post():
     url = "http://10.135.232.34:5000/cadastrar_livro"
 
     nova_post = {
-        "Titulo": "first title",
-        "Autor": "Post Body",
-        "Resumo": "batmam, o cavaleiro das trevas, ataca coringa",
-        "ISBN": "01234567200"
+        "titulo": "first title",
+        "autor": "Post Body",
+        "resumo": "batmam, o cavaleiro das trevas, ataca coringa",
+        "isbn": "01234567200"
     }
 
     response_post = requests.post(url, json=nova_post)
@@ -46,17 +46,17 @@ def livros_put(id):
 
     nova_post = {
         "id": id,
-        "Titulo": "new title",
-        "Autor": "novo body",
-        "Resumo": "batmam",
-        "ISBN": "01234567201"
+        "titulo": "new title",
+        "autor": "novo body",
+        "resumo": "batmam",
+        "isbn": "01234567201"
     }
 
     response_post = requests.put(url, json=nova_post)
 
     if response_post.status_code == 200:
         dados_post = response_post.json()
-        print(f"Titulo: {dados_post['mensagem']}\n")
+        print(f"titulo: {dados_post['mensagem']}\n")
     else:
         print(f'Erro: {response_post.status_code}')
         # print(response_post.json())
@@ -76,9 +76,9 @@ def usuarios_post():
     url = "http://10.135.232.34:5000/cadastrar_usuario"
 
     nova_post = {
-        "Nome": "maurição",
-        "CPF": "34265663",
-        "Endereco": "rua jessé da silva",
+        "nome": "maurição",
+        "cpf": "34265663",
+        "email": "jajaja@gmail.com",
     }
 
     response_post = requests.post(url, json=nova_post)
@@ -96,15 +96,15 @@ def usuarios_put(id):
 
     nova_post = {
         "id": id,
-        "Nome": "renato cariani",
-        "CPF": "34265993",
-        "Endereco": "rua malphite",
+        "nome": "renato cariani",
+        "cpf": "34265993",
+        "email": "sasasasa@gmail.com",
     }
 
     response_post = requests.put(url, json=nova_post)
     if response_post.status_code == 200:
         dados_post = response_post.json()
-        print(f"Nome: {dados_post['mensagem']}\n")
+        print(f"nome: {dados_post['mensagem']}\n")
     else:
         print(f'Erro: {response_post.status_code}')
 
@@ -123,8 +123,8 @@ def emprestimos_post():
     url = "http://10.135.232.34:5000/cadastrar_emprestimo"
 
     nova_post = {
-        "Data_Emprestimo": "12-05-2025",
-        "Data_Devolucao": "29-05-2025",
+        "data_emprestimo": "12-05-2025",
+        "data_devolucao": "29-05-2025",
         "id_usuario": "1",
         "id_livro": "1",
     }
@@ -142,8 +142,8 @@ def emprestimos_put(id):
     url = f"http://10.135.232.34:5000/editar_emprestimo/{id}"
 
     nova_post = {
-        "Data_Emprestimo": "12-05-2025",
-        "Data_Devolucao": "29-05-2025",
+        "data_emprestimo": "12-05-2025",
+        "data_devolucao": "29-05-2025",
         "id_usuario": "1",
         "id_livro": "1",
     }
@@ -151,7 +151,7 @@ def emprestimos_put(id):
     response_post = requests.put(url, json=nova_post)
     if response_post.status_code == 200:
         dados_post = response_post.json()
-        print(f"Data_Emprestimo: {dados_post['mensagem']}\n")
+        print(f"data_emprestimo: {dados_post['mensagem']}\n")
     else:
         print(f'Erro: {response_post.status_code}')
 

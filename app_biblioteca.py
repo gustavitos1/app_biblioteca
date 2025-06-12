@@ -12,23 +12,16 @@ def main(page: ft.Page):
 
     progress = ft.ProgressRing(visible=False)
 
-    txt_titulo = ft.Text(size=16)
-    lbl_titulo = ft.Text(value="Titulo:", size=18, weight=FontWeight.BOLD)
-
-    txt_autor = ft.Text(size=16)
-    lbl_autor = ft.Text(value="Autor:", size=18)
-
-    txt_resumo = ft.Text(size=16)
-    lbl_resumo = ft.Text(value="Resumo:", size=18)
-
-    txt_isbn = ft.Text(size=16)
-    lbl_isbn = ft.Text(value="ISBN:", size=18)
-
-    # inputs de usuario e admin
+    # inputs de usuario
     input_nome = ft.TextField(label="Nome")
-    input_senha = ft.TextField(label="Senha")
+    input_cpf = ft.TextField(label="CPF")
     input_codigo = ft.TextField(label="Código")
     input_email = ft.TextField(label="E-mail")
+
+    input_cadastronome = ft.TextField(label="coloque seu nome")
+    input_cadastroemail = ft.TextField(label="coloque seu email")
+    input_cadastrosenha = ft.TextField(label="coloque sua senha")
+    input_senha = ft.TextField(label="Senha")
 
     # inputs de livro
     input_titulo = ft.TextField(label="Título")
@@ -36,9 +29,12 @@ def main(page: ft.Page):
     input_resumo = ft.TextField(label="Resumo")
     input_isbn = ft.TextField(label="ISBN")
 
+    listaview = ft.ListView(
+        height=500,
+        spacing=1,
+        divider_thickness=1
+    )
 
-
-    cadastro_usuario = ft.ElevatedButton(text="Cadastrar")
     cadastro_emprestimo = ft.ElevatedButton(text="Cadastrar")
     editar_usuario = ft.ElevatedButton(text="Editar")
     editar_livro = ft.ElevatedButton(text="Editar")
@@ -57,25 +53,122 @@ def main(page: ft.Page):
     # funções de cadastro de livro
     cadastro_livro = ft.ElevatedButton(text="Cadastrar Livro", on_click=lambda _: page.go("/cadastro_livro"))
     def cadastrar_livro(e):
+        progress.visible = True
         url = "http://10.135.232.34:5000/cadastrar_livro"
 
         novo_livro = {
-            "Titulo": input_titulo.value,
-            "Autor": input_autor.value,
-            "Resumo": input_resumo.value,
-            "ISBN": input_isbn.value
+            "titulo": input_titulo.value,
+            "autor": input_autor.value,
+            "resumo": input_resumo.value,
+            "isbn": input_isbn.value
         }
         response = requests.post(url, json=novo_livro)
         if response.status_code == 201:
+            # progress.visible = False
             page.overlay.append(msg_sucesso)
+            msg_sucesso.open = True
+            page.update()
         else:
             page.overlay.append(msg_erro)
+            msg_erro.open = True
+            page.update()
 
     realizar_cadastro_livro = ft.ElevatedButton(text="Cadastrar", on_click=cadastrar_livro)
 
-    # funções de listar livro
+    def get_usuarios():
+        url = "http://10.135.232.34:5000/usuarios"
+
+        response = requests.get(url)
+        if response.status_code == 200:
+            print("Info Usuarios", response.json())
+            return response.json()
+        else:
+            return response.json()
+
+    def exibir_usuarios():
+        usuarios = get_usuarios()
+        listaview.controls.clear()
+        for usuario in usuarios:
+            listaview.controls.append(
+                ft.ListTile(
+                    leading=ft.Icon(ft.Icons.PERSON),
+                    title=ft.Text(f"Nome: {usuario['nome']}"),
+                    subtitle=ft.Text(f"Email: {usuario['email']}"),
+                    trailing=ft.PopupMenuButton(
+                        icon=ft.Icons.MORE_VERT,
+                        items=[
+                            ft.PopupMenuItem(text=f"CPF: {usuario['cpf']}"),
+                        ]
+                    )
+                )
+            )
+
+    def get_livros():
+        url = "http://10.135.232.34:5000/livros"
+
+        response = requests.get(url)
+        if response.status_code == 200:
+            print("Info Livros", response.json())
+            return response.json()
+        else:
+            return response.json()
 
 
+    def exibir_livro():
+        livros = get_livros()
+        listaview.controls.clear()
+        for livro in livros:
+            listaview.controls.append(
+                ft.ListTile(
+                    leading=ft.Icon(ft.Icons.BOOK),
+                    title=ft.Text(f"Livro: {livro['titulo']}"),
+                    subtitle=ft.Text(f'Autor: {livro["autor"]}'),
+                    trailing=ft.PopupMenuButton(
+                        icon=ft.Icons.MORE_VERT,
+                        items=[
+                            ft.PopupMenuItem(text=f'resumo - {livro["resumo"]}'),
+                            ft.PopupMenuItem(text=f'ISBN - {livro["isbn"]}'),
+                        ]
+                    ),
+                )
+            )
+        page.update()
+
+
+    # def editar_livro(e, id):
+    #     url = f"http://10.135.232.34:5000/editar_livro/{id}"
+    #
+    #     nova_post = {
+    #         "id": id,
+    #         "titulo": input_titulo.value,
+    #         "autor": input_autor.value,
+    #         "resumo": input_resumo.value,
+    #         "isbn": input_isbn.value
+    #     }
+    #     response_post = requests.put(url, json=nova_post)
+
+    cadastro_usuario = ft.ElevatedButton(text="Cadastrar Usuario", on_click=lambda _: page.go("/cadastro_usuario"))
+    def cadastrar_usuario(e):
+        progress.visible = True
+        url = "http://10.135.232.34:5000/cadastrar_usuario"
+
+        novo_usuario = {
+            "nome": input_nome.value,
+            "cpf": input_cpf.value,
+            "email": input_email.value,
+        }
+        response = requests.post(url, json=novo_usuario)
+        if response.status_code == 201:
+
+            page.overlay.append(msg_sucesso)
+            msg_sucesso.open = True
+            page.update()
+        else:
+            page.overlay.append(msg_erro)
+            msg_erro.open = True
+            page.update()
+
+    realizar_cadastro_usuario = ft.ElevatedButton(text="Cadastrar", on_click=cadastrar_usuario)
 
     # cadastro de usuario base se não tiver cadastrado
     def cadastro():
@@ -105,15 +198,15 @@ def main(page: ft.Page):
                         expand=True,
                     ),
                     Container(
-                        input_nome,
+                        input_cadastronome,
                         alignment=ft.alignment.top_center,
                     ),
                     Container(
-                        input_email,
+                        input_cadastroemail,
                         alignment=ft.alignment.top_center,
                     ),
                     Container(
-                        input_senha,
+                        input_cadastrosenha,
                         alignment=ft.alignment.top_center,
                     ),
                     ft.Text("é Funcionário? Insira seu código de administrador", color="yellow", weight=ft.FontWeight.BOLD),
@@ -136,6 +229,8 @@ def main(page: ft.Page):
                 ],
             )
         )
+        listar_usuarios_botao = ft.ElevatedButton(text="listar_usuarios",
+                                                  on_click=lambda _: page.go("/listar_usuarios"))
         if page.route=="/cadastro":
             page.views.append(
                 View(
@@ -145,7 +240,16 @@ def main(page: ft.Page):
                         input_nome,
                         input_email,
                         input_senha,
-                        ElevatedButton(text="Cadastrar", bgcolor=Colors.BLUE_ACCENT_100, color=Colors.BLACK)
+                        ElevatedButton(text="Cadastrar", bgcolor=Colors.BLUE_ACCENT_100, color=Colors.BLACK),
+                    ]
+                )
+            )
+        if page.route=="/detalhes":
+            page.views.append(
+                View(
+                    "/detalhes",
+                    [
+                        AppBar(title=Text("Detalhes"), bgcolor=Colors.PURPLE),
                     ]
                 )
             )
@@ -168,27 +272,46 @@ def main(page: ft.Page):
                     ]
                 )
             )
-        elif page.route == "/listar_livros":
-            try:
-                resposta = requests.get("http://10.135.232.34:5000/livros")
-                dados = resposta.json()
-                livros = [
-                    ft.Text(
-                        f"Titulo: {L['Titulo']} | Autor: {L['Autor']} | Resumo: {L['Resumo']}, ISBN: {L['ISBN']}"
-                    )
-                    for L in dados
-                ]
-            except Exception as err:
-                livros = [ft.Text(f"Erro ao Listar livro {err}")]
+        if page.route=="/cadastro_usuario":
             page.views.append(
-                ft.View(
-                    "/listar_livros",
-                    controls=[
-                        ft.Text("listar de livros", size=25, weight=FontWeight.BOLD),
-                        ft.Column(livros, scroll=ft.ScrollMode.ALWAYS),
-                        ft.ElevatedButton(text="voltar", on_click=lambda e: page.go("/")),
-                    ],
+                View(
+                    "/cadastro_usuario",
+                    [
+                        AppBar(title=Text("Cadastro Livro"), bgcolor=Colors.PRIMARY_CONTAINER),
+                        input_nome,
+                        input_cpf,
+                        input_email,
+                        realizar_cadastro_usuario,
+                        listar_usuarios_botao,
+
+                    ]
                 )
+            )
+        if page.route=="/listar_usuarios":
+            exibir_usuarios()
+            page.views.append(
+                View(
+                    "/listar_usuarios",
+                    [
+                        AppBar(title=Text("Listar Usuarios"), bgcolor=Colors.PRIMARY_CONTAINER),
+                        listaview
+                    ]
+                )
+            )
+        elif page.route == "/listar_livros":
+            exibir_livro()
+            page.views.append(
+                View(
+                    "/listar_livro",
+                    [
+                        AppBar(title=Text("Listar"), bgcolor=Colors.PRIMARY_CONTAINER),
+                        listaview
+                    ]
+                )
+            )
+        if page.route=="/editar_livro":
+            page.views.append(
+
             )
 
         if page.route=="/opcoes":
@@ -208,6 +331,7 @@ def main(page: ft.Page):
                                 ]
                             )
                         ),
+
                         ft.Card(
                             content=ft.Container(
                                 content=ft.Column(
