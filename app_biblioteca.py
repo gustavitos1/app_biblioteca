@@ -331,7 +331,6 @@ def main(page: ft.Page):
                                 ]
                             )
                         ),
-
                         ft.Card(
                             content=ft.Container(
                                 content=ft.Column(
@@ -340,7 +339,7 @@ def main(page: ft.Page):
                                             leading=ft.Icon(ft.Icons.BOOK),
                                             title=ft.Text("Livros"),
                                             subtitle=ft.Text(
-                                                f"Livros arquivados:"
+                                                f"Livros arquivados: {len(get_livros())}"
                                             ),
                                         ),
                                         ft.Row(
@@ -361,7 +360,7 @@ def main(page: ft.Page):
                                             leading=ft.Icon(ft.Icons.PERSON),
                                             title=ft.Text("Usuários"),
                                             subtitle=ft.Text(
-                                                f"Usuarios arquivados:"
+                                                f"Usuarios arquivados: {len(get_usuarios())}"
                                             ),
                                         ),
                                         ft.Row(
