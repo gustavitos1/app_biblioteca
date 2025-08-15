@@ -15,8 +15,8 @@ def main(page: ft.Page):
     # inputs de usuario
     input_nome = ft.TextField(label="Nome")
     input_cpf = ft.TextField(label="CPF")
-    input_codigo = ft.TextField(label="Código")
     input_email = ft.TextField(label="E-mail")
+    input_papel = ft.TextField(label="Papel")
 
     input_cadastronome = ft.TextField(label="coloque seu nome")
     input_cadastroemail = ft.TextField(label="coloque seu email")
@@ -29,16 +29,19 @@ def main(page: ft.Page):
     input_resumo = ft.TextField(label="Resumo")
     input_isbn = ft.TextField(label="ISBN")
 
+    input_data_emprestimo = ft.TextField(label="Data de emprestimo")
+    input_data_devolucao = ft.TextField(label="Data de devolução")
+
     listaview = ft.ListView(
         height=500,
         spacing=1,
         divider_thickness=1
     )
 
+    id_livro = ft.TextField(label="ID Livro")
+    id_usuario = ft.TextField(label="ID Usuario")
+
     cadastro_emprestimo = ft.ElevatedButton(text="Cadastrar")
-    editar_usuario = ft.ElevatedButton(text="Editar")
-    editar_livro = ft.ElevatedButton(text="Editar")
-    editar_emprestimo = ft.ElevatedButton(text="Editar")
 
     # mensagens de erro e sucesso
     msg_sucesso = ft.SnackBar(
@@ -54,7 +57,7 @@ def main(page: ft.Page):
     cadastro_livro = ft.ElevatedButton(text="Cadastrar Livro", on_click=lambda _: page.go("/cadastro_livro"))
     def cadastrar_livro(e):
         progress.visible = True
-        url = "http://10.135.232.34:5000/cadastrar_livro"
+        url = "http://10.135.235.28:5000/cadastrar_livro"
 
         novo_livro = {
             "titulo": input_titulo.value,
@@ -64,7 +67,7 @@ def main(page: ft.Page):
         }
         response = requests.post(url, json=novo_livro)
         if response.status_code == 201:
-            # progress.visible = False
+            progress.visible = False
             page.overlay.append(msg_sucesso)
             msg_sucesso.open = True
             page.update()
@@ -75,8 +78,54 @@ def main(page: ft.Page):
 
     realizar_cadastro_livro = ft.ElevatedButton(text="Cadastrar", on_click=cadastrar_livro)
 
+    def cadastrar_emprestimo(e):
+        progress.visible = True
+        url = "http://10.135.235.28:5000/cadastrar_emprestimo"
+
+        novo_emprestimo = {
+            "Data_Emprestimo": input_data_emprestimo.value,
+            "Data_Devolucao": input_data_devolucao.value,
+            "id_usuario": id_usuario.value,
+            "id_livro": id_livro.value
+        }
+        response = requests.post(url, json=novo_emprestimo)
+        if response.status_code == 201:
+            page.overlay.append(msg_sucesso)
+            msg_sucesso.open = True
+            page.update()
+        else:
+            page.overlay.append(msg_erro)
+            msg_erro.open = True
+            page.update()
+
+    realizar_emprestimo = ft.ElevatedButton(text="Cadastrar Empréstimo", on_click=cadastrar_emprestimo)
+    cadastro_emprestimo = ft.ElevatedButton(text="Cadastrar Empréstimo", on_click=lambda _: page.go("/cadastro_emprestimo"))
+
+    def get_emprestimos():
+        url = "http://10.135.235.28:5000/emprestimos"
+
+        response = requests.get(url)
+        if response.status_code == 200:
+            print("Info Emprestimos", response.json())
+            return response.json()
+        else:
+            return response.json()
+
+
+    def exibir_emprestimos():
+        emprestimos = get_emprestimos()
+        listaview.controls.clear()
+        for emprestimo in emprestimos:
+            listaview.controls.append(
+                ft.ListTile(
+                    leading=ft.Icon(ft.Icons.ACCESSIBLE),
+                    title=ft.Text(f"Data de Empréstimo: {emprestimo['data_emprestimo']}"),
+                    subtitle=ft.Text(f"Data de Devolução: {emprestimo['data_devolucao']}"),
+                    )
+                )
+
     def get_usuarios():
-        url = "http://10.135.232.34:5000/usuarios"
+        url = "http://10.135.235.28:5000/usuarios"
 
         response = requests.get(url)
         if response.status_code == 200:
@@ -103,8 +152,16 @@ def main(page: ft.Page):
                 )
             )
 
+    # def login():
+    #     url = "http://10.135.235.28:5000/login"
+    #
+    #     response = requests.post(url)
+    #     if response.status_code == 200:
+    #         print("Info Login", response.json())
+    #         return response.json()
+
     def get_livros():
-        url = "http://10.135.232.34:5000/livros"
+        url = "http://10.135.235.28:5000/livros"
 
         response = requests.get(url)
         if response.status_code == 200:
@@ -134,28 +191,17 @@ def main(page: ft.Page):
             )
         page.update()
 
-
-    # def editar_livro(e, id):
-    #     url = f"http://10.135.232.34:5000/editar_livro/{id}"
-    #
-    #     nova_post = {
-    #         "id": id,
-    #         "titulo": input_titulo.value,
-    #         "autor": input_autor.value,
-    #         "resumo": input_resumo.value,
-    #         "isbn": input_isbn.value
-    #     }
-    #     response_post = requests.put(url, json=nova_post)
-
     cadastro_usuario = ft.ElevatedButton(text="Cadastrar Usuario", on_click=lambda _: page.go("/cadastro_usuario"))
     def cadastrar_usuario(e):
         progress.visible = True
-        url = "http://10.135.232.34:5000/cadastrar_usuario"
+        url = "http://10.135.235.28:5000/cadastrar_usuario"
 
         novo_usuario = {
             "nome": input_nome.value,
             "cpf": input_cpf.value,
             "email": input_email.value,
+            "senha": input_senha.value,
+            "papel": input_papel.value,
         }
         response = requests.post(url, json=novo_usuario)
         if response.status_code == 201:
@@ -183,7 +229,7 @@ def main(page: ft.Page):
             ),
         ]
     )
-    botao_voltar = ft.ElevatedButton(text="Voltar", on_click=lambda _: page.go("/"))
+    botao_voltar = ft.ElevatedButton(text="LogOut", on_click=lambda _: page.go("/"))
 
 
     def gerencia_rotas(e):
@@ -193,8 +239,8 @@ def main(page: ft.Page):
                 "/",
                 [
                     Container(
-                        ft.Icon(name="PERSON_PIN_SHARP", size=100),
-                        alignment=ft.alignment.top_center,
+                        ft.Text("Bem vindo a Biblioteca", size=30),
+                        alignment=ft.alignment.bottom_center,
                         expand=True,
                     ),
                     Container(
@@ -208,12 +254,6 @@ def main(page: ft.Page):
                     Container(
                         input_cadastrosenha,
                         alignment=ft.alignment.top_center,
-                    ),
-                    ft.Text("é Funcionário? Insira seu código de administrador", color="yellow", weight=ft.FontWeight.BOLD),
-                    Container(
-                        input_codigo,
-                        alignment=ft.alignment.top_center,
-                        expand=True,
                     ),
                     Container(
                         ElevatedButton(
@@ -229,8 +269,10 @@ def main(page: ft.Page):
                 ],
             )
         )
-        listar_usuarios_botao = ft.ElevatedButton(text="listar_usuarios",
+        listar_usuarios_botao = ft.ElevatedButton(text="listar usuarios",
                                                   on_click=lambda _: page.go("/listar_usuarios"))
+        listar_emprestimos = ft.ElevatedButton(text="listar emprestimos",
+                                               on_click=lambda _: page.go("/listar_emprestimos"))
         if page.route=="/cadastro":
             page.views.append(
                 View(
@@ -281,9 +323,26 @@ def main(page: ft.Page):
                         input_nome,
                         input_cpf,
                         input_email,
+                        input_senha,
+                        input_papel,
                         realizar_cadastro_usuario,
                         listar_usuarios_botao,
 
+                    ]
+                )
+            )
+        if page.route=="/cadastro_emprestimo":
+            page.views.append(
+                View(
+                    "/cadastro_emprestimo",
+                    [
+                        AppBar(title=Text("Cadastro Emprestimo"), bgcolor=Colors.PRIMARY_CONTAINER),
+                        input_data_emprestimo,
+                        input_data_devolucao,
+                        id_usuario,
+                        id_livro,
+                        realizar_emprestimo,
+                        listar_emprestimos
                     ]
                 )
             )
@@ -309,9 +368,16 @@ def main(page: ft.Page):
                     ]
                 )
             )
-        if page.route=="/editar_livro":
+        elif page.route == "/listar_emprestimos":
+            exibir_emprestimos()
             page.views.append(
-
+                View(
+                    "/listar_emprestimos",
+                    [
+                        AppBar(title=Text("Listar"), bgcolor=Colors.PRIMARY_CONTAINER),
+                        listaview
+                    ]
+                )
             )
 
         if page.route=="/opcoes":
@@ -327,7 +393,6 @@ def main(page: ft.Page):
                                 [
                                     ft.Text(f"Email: {input_email.value}"),
                                     ft.Text(f"Senha: {input_senha.value}"),
-                                    ft.Text(f"Código: {input_codigo.value}"),
                                 ]
                             )
                         ),
@@ -343,7 +408,7 @@ def main(page: ft.Page):
                                             ),
                                         ),
                                         ft.Row(
-                                            [cadastro_livro, editar_livro],
+                                            [cadastro_livro],
                                             alignment=ft.MainAxisAlignment.END,
                                         ),
                                     ]
@@ -364,7 +429,7 @@ def main(page: ft.Page):
                                             ),
                                         ),
                                         ft.Row(
-                                            [cadastro_usuario, editar_usuario],
+                                            [cadastro_usuario],
                                             alignment=ft.MainAxisAlignment.END,
                                         ),
                                     ]
@@ -381,11 +446,11 @@ def main(page: ft.Page):
                                             leading=ft.Icon(ft.Icons.ARROW_UPWARD),
                                             title=ft.Text("Empréstimos"),
                                             subtitle=ft.Text(
-                                                f"Empréstimos arquivados:"
+                                                f"Empréstimos arquivados: {len(get_emprestimos())}"
                                             ),
                                         ),
                                         ft.Row(
-                                            [cadastro_emprestimo, editar_emprestimo],
+                                            [cadastro_emprestimo],
                                             alignment=ft.MainAxisAlignment.END,
                                         ),
                                     ]

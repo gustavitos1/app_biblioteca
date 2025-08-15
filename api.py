@@ -1,7 +1,7 @@
 import requests
 
 def livros_get():
-    url = f"http://10.135.232.34:5000/livros"
+    url = f"http://10.135.235.28:5000/livros"
     livro_get = requests.get(url)
 
     if livro_get.status_code == 200:
@@ -18,7 +18,7 @@ def livros_get():
         print(f'Erro: {livro_get.status_code}')
 
 def livros_post():
-    url = "http://10.135.232.34:5000/cadastrar_livro"
+    url = "http://10.135.235.28:5000/cadastrar_livro"
 
     nova_post = {
         "titulo": "first title",
@@ -42,7 +42,7 @@ def livros_post():
 #     exemplo_post()
 
 def livros_put(id):
-    url = f"http://10.135.232.34:5000/editar_livro/{id}"
+    url = f"http://10.135.235.28:5000/editar_livro/{id}"
 
     nova_post = {
         "id": id,
@@ -62,7 +62,7 @@ def livros_put(id):
         # print(response_post.json())
 
 def usuarios_get():
-    url = f"http://10.135.232.34:5000/usuarios"
+    url = f"http://10.135.235.28:5000/usuarios"
 
     usuarios_get = requests.get(url)
     if usuarios_get.status_code == 200:
@@ -73,7 +73,7 @@ def usuarios_get():
         print(f'Erro: {usuarios_get.status_code}')
 
 def usuarios_post():
-    url = "http://10.135.232.34:5000/cadastrar_usuario"
+    url = "http://10.135.235.28:5000/cadastrar_usuario"
 
     nova_post = {
         "nome": "maurição",
@@ -92,7 +92,7 @@ def usuarios_post():
 
 
 def usuarios_put(id):
-    url = f"http://10.135.232.34:5000/editar_usuario/{id}"
+    url = f"http://10.135.235.28:5000/editar_usuario/{id}"
 
     nova_post = {
         "id": id,
@@ -109,7 +109,7 @@ def usuarios_put(id):
         print(f'Erro: {response_post.status_code}')
 
 def emprestimos_get():
-    url = f"http://10.135.232.34:5000/emprestimos"
+    url = f"http://10.135.235.28:5000/emprestimos"
 
     emprestimos_get = requests.get(url)
     if emprestimos_get.status_code == 200:
@@ -120,7 +120,7 @@ def emprestimos_get():
         print(f'Erro: {emprestimos_get.status_code}')
 
 def emprestimos_post():
-    url = "http://10.135.232.34:5000/cadastrar_emprestimo"
+    url = "http://10.135.235.28:5000/cadastrar_emprestimo"
 
     nova_post = {
         "data_emprestimo": "12-05-2025",
@@ -139,7 +139,7 @@ def emprestimos_post():
         print(f'Erro: {response_post.json()}')
 
 def emprestimos_put(id):
-    url = f"http://10.135.232.34:5000/editar_emprestimo/{id}"
+    url = f"http://10.135.235.28:5000/editar_emprestimo/{id}"
 
     nova_post = {
         "data_emprestimo": "12-05-2025",
@@ -155,4 +155,4 @@ def emprestimos_put(id):
     else:
         print(f'Erro: {response_post.status_code}')
 
-livros_post()
+usuarios_post()
